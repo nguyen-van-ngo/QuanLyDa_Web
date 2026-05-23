@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đơn Hàng Đá - Admin Dashboard</title>
+    <!-- Boxicons for modern icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+
+    <!-- ==================== LOGIN VIEW ==================== -->
+    <div id="login-view" class="view-section">
+        <div class="login-container">
+            <!-- Left side background with info -->
+            <div class="login-left">
+                <div class="login-left-content">
+                    <div class="logo-box">
+                        <i class='bx bx-cube-alt logo-icon'></i>
+                    </div>
+                    <h1>QUẢN LÝ ĐƠN HÀNG ĐÁ</h1>
+                    <p>Hệ thống quản lý đơn hàng đá<br>nhanh chóng - chính xác - hiệu quả</p>
+                </div>
+            </div>
+            
+            <!-- Right side login form -->
+            <div class="login-right">
+                <div class="login-card">
+                    <h2>Đăng nhập hệ thống</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="username">Tên đăng nhập</label>
+                            <input type="text" id="username" placeholder="Nhập tên đăng nhập" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mật khẩu</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="password" placeholder="Nhập mật khẩu" required>
+                                <i class='bx bx-hide toggle-password'></i>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="remember-me">
+                                <span class="checkmark"></span>
+                                Ghi nhớ đăng nhập
+                            </label>
+                            <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                        </div>
+                        <button type="submit" class="btn-primary btn-login">
+                            Đăng nhập
+                        </button>
+                    </form>
+                    <div class="login-footer">
+                        &copy; 2024 Quản lý đơn hàng đá. All rights reserved.
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- ==================== DASHBOARD VIEW ==================== -->
+    <div id="dashboard-view" class="view-section" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class='bx bx-cube-alt logo-icon'></i>
+                <div class="logo-text">
+                    <span>QUẢN LÝ</span>
+                    <span>ĐƠN HÀNG ĐÁ</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li>
+                    <a href="#" class="nav-item">
+                        <i class='bx bx-home-alt'></i>
+                        <span class="link_name">Tổng quan</span>
+                    </a>
+                </li>
+                <li id="menu-group-order">
+                    <a href="#" class="nav-item" id="menu-order-create">
+                        <i class='bx bx-add-to-queue'></i>
+                        <span class="link_name">Tạo đơn hàng</span>
+                    </a>
+                </li>
+                <li>
+                    <div class="nav-item has-submenu">
+                        <i class='bx bx-receipt'></i>
+                        <span class="link_name">Đơn hàng</span>
+                        <i class='bx bx-chevron-down arrow'></i>
+                    </div>
+                </li>
+                <li class="active open" id="menu-group-vehicle">
+                    <div class="nav-item has-submenu">
+                        <i class='bx bx-car'></i>
+                        <span class="link_name">Quản lý xe</span>
+                        <i class='bx bx-chevron-down arrow'></i>
+                    </div>
+                    <ul class="sub-menu">
+                        <li><a href="#" class="active" id="menu-vehicle-list">Danh sách biển số</a></li>
+                    </ul>
+                </li>
+                <li id="menu-group-partner">
+                    <div class="nav-item has-submenu">
+                        <i class='bx bx-group'></i>
+                        <span class="link_name">Khách hàng</span>
+                        <i class='bx bx-chevron-down arrow'></i>
+                    </div>
+                    <ul class="sub-menu">
+                        <li><a href="#" id="menu-partner-list">Danh sách khách hàng</a></li>
+                    </ul>
+                </li>
+                <li id="menu-group-product">
+                    <div class="nav-item has-submenu">
+                        <i class='bx bx-box'></i>
+                        <span class="link_name">Sản phẩm</span>
+                        <i class='bx bx-chevron-down arrow'></i>
+                    </div>
+                    <ul class="sub-menu">
+                        <li><a href="#" id="menu-product-list">Danh sách sản phẩm</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="nav-item has-submenu">
+                        <i class='bx bx-line-chart'></i>
+                        <span class="link_name">Báo cáo</span>
+                        <i class='bx bx-chevron-down arrow'></i>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" class="nav-item">
+                        <i class='bx bx-cog'></i>
+                        <span class="link_name">Cài đặt</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-item">
+                        <i class='bx bx-user'></i>
+                        <span class="link_name">Người dùng</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <section class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <i class='bx bx-menu sidebar-toggle'></i>
+                    <h2 class="page-title" id="page-title">Quản Lý Đơn Hàng</h2>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class='bx bx-bell'></i>
+                        <span class="badge">1</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">
+                            <i class='bx bxs-user-circle'></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="greeting">Xin chào, <strong>Admin</strong></span>
+                            <span class="role">Quản trị viên</span>
+                        </div>
+                        <i class='bx bx-log-out logout-btn' id="logout-btn" title="Đăng xuất"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-wrapper">
+                <div class="breadcrumb" id="main-breadcrumb">
+                    Trang chủ / Quản lý xe / <span class="current">Danh sách biển số</span>
+                </div>
+
+                <!-- Vehicle List Panel -->
+                <div class="panel" id="vehicle-list-panel">
+                    <div class="panel-header">
+                        <div class="search-box">
+                            <input type="text" placeholder="Nhập từ khóa tìm kiếm..." id="search-input">
+                            <i class='bx bx-search'></i>
+                        </div>
+                        <button class="btn-primary" id="btn-add-vehicle">
+                            <i class='bx bx-plus'></i> Thêm biển số xe
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Biển số xe</th>
+                                    <th>Tên tài xế</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ghi chú</th>
+                                    <th class="action-header">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicle-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination-container" id="vehicle-pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid var(--border-color); margin-top: 10px;">
+                            <div class="pagination-info" id="vehicle-pagination-info" style="font-size: 13px; color: var(--text-muted);">
+                                Hiển thị 0-0 trên 0
+                            </div>
+                            <div class="pagination-controls" style="display: flex; gap: 5px;">
+                                <button id="btn-prev-page-vehicle" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled><i class='bx bx-chevron-left'></i> Trước</button>
+                                <span id="current-page-display-vehicle" style="padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--primary-color);">1</span>
+                                <button id="btn-next-page-vehicle" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled>Sau <i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Partner List Panel (Hidden by default) -->
+                <div class="panel" id="partner-list-panel" style="display: none;">
+                    <div class="panel-header" style="flex-wrap: wrap; gap: 15px;">
+                        <div class="search-box">
+                            <input type="text" placeholder="Nhập từ khóa tìm kiếm..." id="search-input-partner">
+                            <i class='bx bx-search'></i>
+                        </div>
+                        
+                        <div class="filter-group" style="display: flex; gap: 15px; align-items: center; font-size: 14px;">
+                            <label style="font-weight: 500;">Loại khách:</label>
+                            <label class="radio-container"><input type="radio" name="partnerType" value="" checked> Tất cả</label>
+                            <label class="radio-container"><input type="radio" name="partnerType" value="BUYER"> Người mua</label>
+                            <label class="radio-container"><input type="radio" name="partnerType" value="SUPPLIER"> Nhà cung cấp</label>
+                        </div>
+
+                        <button class="btn-primary" id="btn-add-partner">
+                            <i class='bx bx-plus'></i> Thêm khách hàng
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên khách hàng</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Loại khách hàng</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ghi chú</th>
+                                    <th class="action-header">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="partner-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination-container" id="partner-pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid var(--border-color); margin-top: 10px;">
+                            <div class="pagination-info" id="partner-pagination-info" style="font-size: 13px; color: var(--text-muted);">
+                                Hiển thị 0-0 trên 0
+                            </div>
+                            <div class="pagination-controls" style="display: flex; gap: 5px;">
+                                <button id="btn-prev-page-partner" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled><i class='bx bx-chevron-left'></i> Trước</button>
+                                <span id="current-page-display-partner" style="padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--primary-color);">1</span>
+                                <button id="btn-next-page-partner" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled>Sau <i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quản lý Sản phẩm -->
+                <div class="panel" id="product-list-panel" style="display: none;">
+                    <div class="panel-header" style="flex-wrap: wrap; gap: 15px;">
+                        <div class="search-box">
+                            <input type="text" placeholder="Nhập từ khóa tìm kiếm..." id="search-input-product">
+                            <i class='bx bx-search'></i>
+                        </div>
+                        
+                        <button class="btn-primary" id="btn-add-product">
+                            <i class='bx bx-plus'></i> Thêm sản phẩm
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã Sản Phẩm</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th>Loại Sản Phẩm</th>
+                                    <th>Đơn vị</th>
+                                    <th>Trạng Thái</th>
+                                    <th class="action-header">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination-container" id="product-pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid var(--border-color); margin-top: 10px;">
+                            <div class="pagination-info" id="product-pagination-info" style="font-size: 13px; color: var(--text-muted);">
+                                Hiển thị 0-0 trên 0
+                            </div>
+                            <div class="pagination-controls" style="display: flex; gap: 5px;">
+                                <button id="btn-prev-page-product" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled><i class='bx bx-chevron-left'></i> Trước</button>
+                                <span id="current-page-display-product" style="padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--primary-color);">1</span>
+                                <button id="btn-next-page-product" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled>Sau <i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tạo Đơn Hàng -->
+                <div class="panel" id="order-create-panel" style="display: none;">
+                    <div class="panel-header">
+                        <h2>Tạo Đơn Hàng Mới</h2>
+                    </div>
+                    <div class="panel-body" style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <form id="order-create-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label>Loại đơn hàng <span style="color:red">*</span></label>
+                                    <select id="orderType" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                        <option value="NHAP_HANG">Nhập</option>
+                                        <option value="XUAT_HANG">Xuất</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ngày tạo đơn</label>
+                                    <input type="text" id="orderDate" readonly style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background: #f5f5f5;">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group autocomplete-wrapper" style="position: relative;">
+                                    <label>Khách hàng <span style="color:red">*</span></label>
+                                    <input type="text" id="orderCustomerSearch" placeholder="Nhập tên khách hàng..." autocomplete="off" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <input type="hidden" id="orderCustomerId">
+                                    <div id="orderCustomerDropdown" class="autocomplete-dropdown"></div>
+                                </div>
+                                <div class="form-group autocomplete-wrapper" style="position: relative;">
+                                    <label>Sản phẩm <span style="color:red">*</span></label>
+                                    <input type="text" id="orderProductSearch" placeholder="Nhập tên sản phẩm..." autocomplete="off" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <input type="hidden" id="orderProductId">
+                                    <div id="orderProductDropdown" class="autocomplete-dropdown"></div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group autocomplete-wrapper" style="position: relative;">
+                                    <label>Biển số xe <span style="color:red">*</span></label>
+                                    <input type="text" id="orderVehicleSearch" placeholder="Nhập biển số xe..." autocomplete="off" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <input type="hidden" id="orderVehicleId">
+                                    <div id="orderVehicleDropdown" class="autocomplete-dropdown"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tên tài xế <span style="color:red">*</span></label>
+                                    <input type="text" id="orderDriverName" readonly style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background: #f5f5f5;">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label>Khối lượng đặt (Tấn) <span style="color:red">*</span></label>
+                                    <input type="number" id="orderWeight" step="0.01" min="0.01" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ghi chú (Note)</label>
+                                    <input type="text" id="orderNote" placeholder="Nhập ghi chú..." style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                </div>
+                            </div>
+
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button type="submit" class="btn-primary" id="btn-submit-order" style="padding: 10px 20px; font-weight: bold;">Tạo Đơn Hàng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div id="vehicle-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Cập nhật thông tin xe</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="vehicle-form">
+                    <input type="hidden" id="vehicle-id">
+                    <div class="form-group">
+                        <label for="plateNumber">Biển số xe *</label>
+                        <input type="text" id="plateNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="driverName">Tên tài xế *</label>
+                        <input type="text" id="driverName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="text" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="isActive">Trạng thái</label>
+                        <select id="isActive">
+                            <option value="true">Đang hoạt động</option>
+                            <option value="false">Dừng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Ghi chú</label>
+                        <textarea id="note" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal-btn">Hủy</button>
+                <button class="btn-primary" id="btn-save-vehicle">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal cho Khách hàng -->
+    <div id="partner-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="partner-modal-title">Cập nhật thông tin khách hàng</h3>
+                <span class="close-modal-partner close-modal-btn-icon" style="font-size: 24px; cursor: pointer; color: var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="partner-form">
+                    <input type="hidden" id="partner-id">
+                    <div class="form-group">
+                        <label for="partnerName">Tên khách hàng *</label>
+                        <input type="text" id="partnerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="partnerPhone">Số điện thoại</label>
+                        <input type="text" id="partnerPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="partnerAddress">Địa chỉ</label>
+                        <input type="text" id="partnerAddress">
+                    </div>
+                    <div class="form-group">
+                        <label for="partnerTypeSelect">Loại khách hàng *</label>
+                        <select id="partnerTypeSelect" required>
+                            <option value="BUYER">Người mua</option>
+                            <option value="SUPPLIER">Nhà cung cấp</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="partnerIsActive">Trạng thái</label>
+                        <select id="partnerIsActive">
+                            <option value="true">Đang hoạt động</option>
+                            <option value="false">Ngừng hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="partnerNote">Ghi chú</label>
+                        <textarea id="partnerNote" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal-partner-btn">Hủy</button>
+                <button class="btn-primary" id="btn-save-partner">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal cho Sản phẩm -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Cập nhật thông tin sản phẩm</h3>
+                <span class="close-modal-product close-modal-btn-icon" style="font-size: 24px; cursor: pointer; color: var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <div class="form-group">
+                        <label for="productCode">Mã Sản Phẩm *</label>
+                        <input type="text" id="productCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productName">Tên Sản Phẩm *</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productTypeSelect">Loại Sản Phẩm *</label>
+                        <select id="productTypeSelect" required>
+                            <option value="DA_XO_BO">Đá xô bồ</option>
+                            <option value="DA_THANH_PHAM">Đá thành phẩm</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productUnit">Đơn vị</label>
+                        <input type="text" id="productUnit">
+                    </div>
+                    <div class="form-group">
+                        <label for="productIsActive">Trạng thái</label>
+                        <select id="productIsActive">
+                            <option value="true">Còn Hàng</option>
+                            <option value="false">Hết Hàng</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal-product-btn">Hủy</button>
+                <button class="btn-primary" id="btn-save-product">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js?v=2"></script>
+    <script src="js/app_v3.js"></script>
+</body>
+</html>
