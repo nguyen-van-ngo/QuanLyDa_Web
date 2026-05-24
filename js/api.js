@@ -326,5 +326,26 @@ const api = {
             console.error('createOrder error:', error);
             throw error;
         }
+    },
+    getOrders: async (page = 0, size = 10, keyword = '') => {
+        try {
+            let url = `${API_BASE_URL}/orders?page=${page}&size=${size}`;
+            if (keyword) {
+                url = `${API_BASE_URL}/orders/search?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`;
+            }
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: api.getHeaders()
+            });
+            if (!response.ok) {
+                if(response.status === 401 || response.status === 403) throw new Error('UNAUTHORIZED');
+                const errData = await response.json().catch(() => null);
+                throw new Error(errData?.message || 'Lỗi khi tải danh sách đơn hàng.');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('getOrders error:', error);
+            throw error;
+        }
     }
 };

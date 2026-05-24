@@ -92,12 +92,15 @@
                         <span class="link_name">Tạo đơn hàng</span>
                     </a>
                 </li>
-                <li>
+                <li id="menu-group-order-list">
                     <div class="nav-item has-submenu">
                         <i class='bx bx-receipt'></i>
                         <span class="link_name">Đơn hàng</span>
                         <i class='bx bx-chevron-down arrow'></i>
                     </div>
+                    <ul class="sub-menu">
+                        <li><a href="#" id="menu-order-list">Danh sách đơn hàng</a></li>
+                    </ul>
                 </li>
                 <li class="active open" id="menu-group-vehicle">
                     <div class="nav-item has-submenu">
@@ -181,6 +184,51 @@
             <div class="content-wrapper">
                 <div class="breadcrumb" id="main-breadcrumb">
                     Trang chủ / Quản lý xe / <span class="current">Danh sách biển số</span>
+                </div>
+
+                <!-- Order List Panel (Hidden by default) -->
+                <div class="panel" id="order-list-panel" style="display: none;">
+                    <div class="panel-header">
+                        <div class="search-box">
+                            <input type="text" placeholder="Nhập từ khóa tìm kiếm..." id="search-input-order">
+                            <i class='bx bx-search'></i>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên khách hàng</th>
+                                    <th>Người đặt</th>
+                                    <th>Khối lượng đặt</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tên sp</th>
+                                    <th>Trạng thái</th>
+                                    <th>Biển số xe</th>
+                                    <th>Cân lần 1</th>
+                                    <th>Cân lần 2</th>
+                                    <th>Thực xuất</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination-container" id="order-pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid var(--border-color); margin-top: 10px;">
+                            <div class="pagination-info" id="order-pagination-info" style="font-size: 13px; color: var(--text-muted);">
+                                Hiển thị 0-0 trên 0
+                            </div>
+                            <div class="pagination-controls" style="display: flex; gap: 5px;">
+                                <button id="btn-prev-page-order" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled><i class='bx bx-chevron-left'></i> Trước</button>
+                                <span id="current-page-display-order" style="padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--primary-color);">1</span>
+                                <button id="btn-next-page-order" class="btn-secondary" style="padding: 5px 10px; font-size: 13px;" disabled>Sau <i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Vehicle List Panel -->

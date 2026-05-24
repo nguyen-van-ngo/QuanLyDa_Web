@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuProductList = document.getElementById('menu-product-list');
     const menuGroupOrder = document.getElementById('menu-group-order');
     const menuOrderCreate = document.getElementById('menu-order-create');
+    const menuGroupOrderList = document.getElementById('menu-group-order-list');
+    const menuOrderList = document.getElementById('menu-order-list');
     const mainBreadcrumb = document.getElementById('main-breadcrumb');
 
     // Panels
@@ -21,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const partnerListPanel = document.getElementById('partner-list-panel');
     const productListPanel = document.getElementById('product-list-panel');
     const orderCreatePanel = document.getElementById('order-create-panel');
+    const orderListPanel = document.getElementById('order-list-panel');
 
     // Vehicles DOM
     const vehicleTableBody = document.getElementById('vehicle-table-body');
@@ -40,6 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAddProduct = document.getElementById('btn-add-product');
     const searchInputProduct = document.getElementById('search-input-product');
     const searchIconProduct = document.querySelector('#product-list-panel .search-box i');
+
+    // Orders List DOM
+    const orderTableBody = document.getElementById('order-table-body');
+    const searchInputOrder = document.getElementById('search-input-order');
+    const searchIconOrder = document.querySelector('#order-list-panel .search-box i');
+    const btnPrevPageOrder = document.getElementById('btn-prev-page-order');
+    const btnNextPageOrder = document.getElementById('btn-next-page-order');
+    const currentPageDisplayOrder = document.getElementById('current-page-display-order');
+    const orderPaginationInfo = document.getElementById('order-pagination-info');
+    let currentOrderPage = 0;
+    let currentOrderSearchKeyword = '';
 
     // Modal DOM (Vehicle)
     const vehicleModal = document.getElementById('vehicle-modal');
@@ -178,12 +192,14 @@ document.addEventListener('DOMContentLoaded', () => {
         vehicleListPanel.style.display = 'none';
         partnerListPanel.style.display = 'none';
         if (productListPanel) productListPanel.style.display = 'none';
+        if (orderListPanel) orderListPanel.style.display = 'none';
         if (orderCreatePanel) orderCreatePanel.style.display = 'block';
         
         if (menuGroupOrder) menuGroupOrder.classList.add('active', 'open');
         menuGroupVehicle.classList.remove('active');
         menuGroupPartner.classList.remove('active');
         if (menuGroupProduct) menuGroupProduct.classList.remove('active');
+        if (menuGroupOrderList) menuGroupOrderList.classList.remove('active');
         
         mainBreadcrumb.innerHTML = 'Home <span class="separator">&bull;</span> Quản lý Đơn hàng <span class="separator">&bull;</span> Tạo đơn hàng';
         document.getElementById('page-title').innerText = 'Tạo đơn hàng';
@@ -193,9 +209,29 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('orderCustomerId').value = '';
         document.getElementById('orderProductId').value = '';
         document.getElementById('orderVehicleId').value = '';
+        loadOrderFormInitialData();
         
         const today = new Date();
         document.getElementById('orderDate').value = today.toLocaleDateString('vi-VN');
+    }
+
+    function showOrderListPanel() {
+        vehicleListPanel.style.display = 'none';
+        partnerListPanel.style.display = 'none';
+        if (productListPanel) productListPanel.style.display = 'none';
+        if (orderCreatePanel) orderCreatePanel.style.display = 'none';
+        if (orderListPanel) orderListPanel.style.display = 'block';
+        
+        if (menuGroupOrderList) menuGroupOrderList.classList.add('active', 'open');
+        menuGroupVehicle.classList.remove('active');
+        menuGroupPartner.classList.remove('active');
+        if (menuGroupProduct) menuGroupProduct.classList.remove('active');
+        if (menuGroupOrder) menuGroupOrder.classList.remove('active');
+        
+        mainBreadcrumb.innerHTML = 'Trang chủ / Đơn hàng / <span class="current">Danh sách đơn hàng</span>';
+        document.getElementById('page-title').innerText = 'Danh sách đơn hàng';
+        
+        loadOrders();
     }
 
     // Sidebar Menu Events
@@ -236,6 +272,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.sub-menu a').forEach(a => a.classList.remove('active'));
             menuOrderCreate.classList.add('active');
             showOrderCreatePanel();
+        });
+    }
+
+    if (menuOrderList) {
+        menuOrderList.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.sub-menu a').forEach(a => a.classList.remove('active'));
+            menuOrderList.classList.add('active');
+            showOrderListPanel();
         });
     }
 
@@ -1079,6 +1124,117 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 btnSubmit.innerHTML = originalText;
                 btnSubmit.disabled = false;
+            }
+        });
+    }
+    // === Orders List Logic ===
+    async function loadOrders() {
+        orderTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center;"><i class="bx bx-loader-alt bx-spin"></i> Đang tải dữ liệu...</td></tr>';
+        try {
+            const data = await api.getOrders(currentOrderPage, 10, currentOrderSearchKeyword);
+            const orders = data.content || [];
+            const totalPages = data.totalPages || 0;
+            const totalElements = data.totalElements || 0;
+            
+            renderOrders(orders);
+            updateOrderPaginationUI(totalPages, totalElements);
+        } catch (error) {
+            if (error.message.includes('UNAUTHORIZED')) {
+                orderTableBody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; font-weight: bold;">LỖI BẢO MẬT BACKEND: ${error.message} (Hãy kiểm tra lại @PreAuthorize trên Controller)</td></tr>`;
+            } else {
+                orderTableBody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red;">${error.message}</td></tr>`;
+                showToast(error.message, 'error');
+            }
+        }
+    }
+
+    function renderOrders(orders) {
+        orderTableBody.innerHTML = '';
+        if (orders.length === 0) {
+            orderTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center;">Không có dữ liệu đơn hàng</td></tr>';
+            return;
+        }
+
+        orders.forEach((order, index) => {
+            const tr = document.createElement('tr');
+            
+            const stt = (currentOrderPage * 10) + index + 1;
+            
+            // Format status with color
+            let statusHtml = `<span>${order.status || ''}</span>`;
+            if (order.status === 'CHO_XAC_NHAN') {
+                statusHtml = `<span style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 3px 8px; border-radius: 4px;">Chờ xác nhận</span>`;
+            } else if (order.status === 'DA_XAC_NHAN') {
+                statusHtml = `<span style="color: #2196F3; font-weight: bold; background: #e3f2fd; padding: 3px 8px; border-radius: 4px;">Đã xác nhận</span>`;
+            } else if (order.status === 'DANG_GIAO') {
+                statusHtml = `<span style="color: #9c27b0; font-weight: bold; background: #f3e5f5; padding: 3px 8px; border-radius: 4px;">Đang giao</span>`;
+            } else if (order.status === 'HOAN_THANH') {
+                statusHtml = `<span style="color: #4CAF50; font-weight: bold; background: #e8f5e9; padding: 3px 8px; border-radius: 4px;">Hoàn thành</span>`;
+            } else if (order.status === 'HUY') {
+                statusHtml = `<span style="color: #f44336; font-weight: bold; background: #ffebee; padding: 3px 8px; border-radius: 4px;">Hủy</span>`;
+            }
+
+            const w1 = order.weight1 ? order.weight1 : '-';
+            const w2 = order.weight2 ? order.weight2 : '-';
+            const nw = order.netWeight ? order.netWeight : '-';
+            
+            tr.innerHTML = `
+                <td>${stt}</td>
+                <td>${order.customerName || '-'}</td>
+                <td>${order.createdByName || '-'}</td>
+                <td>${order.orderedWeight || '-'}</td>
+                <td>${order.orderDate || '-'}</td>
+                <td>${order.productName || '-'}</td>
+                <td>${statusHtml}</td>
+                <td>${order.plateNumber || '-'}</td>
+                <td>${w1}</td>
+                <td>${w2}</td>
+                <td>${nw}</td>
+            `;
+            orderTableBody.appendChild(tr);
+        });
+    }
+
+    function updateOrderPaginationUI(totalPages, totalElements) {
+        if (btnPrevPageOrder && btnNextPageOrder && currentPageDisplayOrder && orderPaginationInfo) {
+            btnPrevPageOrder.disabled = currentOrderPage === 0;
+            btnNextPageOrder.disabled = currentOrderPage >= totalPages - 1 || totalPages === 0;
+            currentPageDisplayOrder.textContent = currentOrderPage + 1;
+
+            const startIdx = totalElements === 0 ? 0 : (currentOrderPage * 10) + 1;
+            const endIdx = Math.min((currentOrderPage + 1) * 10, totalElements);
+            orderPaginationInfo.textContent = `Hiển thị ${startIdx}-${endIdx} trên ${totalElements}`;
+        }
+    }
+
+    if (btnPrevPageOrder) {
+        btnPrevPageOrder.addEventListener('click', () => {
+            if (currentOrderPage > 0) {
+                currentOrderPage--;
+                loadOrders();
+            }
+        });
+    }
+
+    if (btnNextPageOrder) {
+        btnNextPageOrder.addEventListener('click', () => {
+            currentOrderPage++;
+            loadOrders();
+        });
+    }
+
+    if (searchIconOrder && searchInputOrder) {
+        searchIconOrder.addEventListener('click', () => {
+            currentOrderSearchKeyword = searchInputOrder.value.trim();
+            currentOrderPage = 0;
+            loadOrders();
+        });
+        
+        searchInputOrder.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                currentOrderSearchKeyword = searchInputOrder.value.trim();
+                currentOrderPage = 0;
+                loadOrders();
             }
         });
     }
