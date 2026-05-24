@@ -188,11 +188,10 @@
 
                 <!-- Order List Panel (Hidden by default) -->
                 <div class="panel" id="order-list-panel" style="display: none;">
-                    <div class="panel-header">
-                        <div class="search-box">
-                            <input type="text" placeholder="Nhập từ khóa tìm kiếm..." id="search-input-order">
-                            <i class='bx bx-search'></i>
-                        </div>
+                    <div class="panel-header" style="justify-content: flex-end;">
+                        <button class="btn-primary" id="btn-apply-order-filters" style="margin-left: 10px;">
+                            <i class='bx bx-filter-alt'></i> Áp dụng bộ lọc
+                        </button>
                     </div>
 
                     <div class="table-container">
@@ -210,6 +209,66 @@
                                     <th>Cân lần 1</th>
                                     <th>Cân lần 2</th>
                                     <th>Thực xuất</th>
+                                </tr>
+                                <tr class="filter-row">
+                                    <th></th>
+                                    <th>
+                                        <div class="custom-dropdown" id="dropdown-filter-customer">
+                                            <div class="dropdown-header">Khách hàng <i class='bx bx-chevron-down'></i></div>
+                                            <div class="dropdown-body">
+                                                <input type="text" class="dropdown-search" placeholder="Tìm kiếm">
+                                                <div class="dropdown-options">
+                                                    <!-- Dynamic checkboxes -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <input type="text" class="filter-input" id="filter-created-by" placeholder="Người đặt">
+                                    </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>
+                                        <div class="custom-dropdown" id="dropdown-filter-product">
+                                            <div class="dropdown-header">Sản phẩm <i class='bx bx-chevron-down'></i></div>
+                                            <div class="dropdown-body">
+                                                <input type="text" class="dropdown-search" placeholder="Tìm kiếm">
+                                                <div class="dropdown-options">
+                                                    <!-- Dynamic checkboxes -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="custom-dropdown" id="dropdown-filter-status">
+                                            <div class="dropdown-header">Trạng thái <i class='bx bx-chevron-down'></i></div>
+                                            <div class="dropdown-body">
+                                                <input type="text" class="dropdown-search" placeholder="Tìm kiếm">
+                                                <div class="dropdown-options">
+                                                    <!-- Static checkboxes for Status -->
+                                                    <label><input type="checkbox" value="CHO_XAC_NHAN"> Chờ xác nhận</label>
+                                                    <label><input type="checkbox" value="DA_XAC_NHAN"> Đã xác nhận</label>
+                                                    <label><input type="checkbox" value="DANG_GIAO"> Đang giao</label>
+                                                    <label><input type="checkbox" value="HOAN_THANH"> Hoàn thành</label>
+                                                    <label><input type="checkbox" value="HUY"> Hủy</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="custom-dropdown" id="dropdown-filter-plate">
+                                            <div class="dropdown-header">Biển số xe <i class='bx bx-chevron-down'></i></div>
+                                            <div class="dropdown-body">
+                                                <input type="text" class="dropdown-search" placeholder="Tìm kiếm">
+                                                <div class="dropdown-options">
+                                                    <!-- Dynamic checkboxes -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="order-table-body">

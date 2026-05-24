@@ -1128,10 +1128,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // === Orders List Logic ===
+    let currentOrderFilters = {
+        customerNames: [],
+        createdByNames: [],
+        productNames: [],
+        statuses: [],
+        plateNumbers: []
+    };
+
     async function loadOrders() {
         orderTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center;"><i class="bx bx-loader-alt bx-spin"></i> Đang tải dữ liệu...</td></tr>';
         try {
-            const data = await api.getOrders(currentOrderPage, 10, currentOrderSearchKeyword);
+            const data = await api.getOrders(currentOrderPage, 10, currentOrderFilters);
             const orders = data.content || [];
             const totalPages = data.totalPages || 0;
             const totalElements = data.totalElements || 0;
@@ -1223,19 +1231,109 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (searchIconOrder && searchInputOrder) {
-        searchIconOrder.addEventListener('click', () => {
-            currentOrderSearchKeyword = searchInputOrder.value.trim();
+    // Setup Filter Dropdowns
+    function initCustomDropdown(dropdownId, isDynamic, fetchApi, onApply) {
+        const dropdown = document.getElementById(dropdownId);
+        if(!dropdown) return;
+        const header = dropdown.querySelector('.dropdown-header');
+        const search = dropdown.querySelector('.dropdown-search');
+        const optionsContainer = dropdown.querySelector('.dropdown-options');
+
+        header.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.custom-dropdown').forEach(d => {
+                if(d !== dropdown) d.classList.remove('open');
+            });
+            dropdown.classList.toggle('open');
+            
+            if(dropdown.classList.contains('open') && isDynamic && optionsContainer.children.length === 0) {
+                // Fetch dynamic options
+                optionsContainer.innerHTML = '<div style="padding:10px;text-align:center"><i class="bx bx-loader-alt bx-spin"></i></div>';
+                try {
+                    const data = await fetchApi('');
+                    renderOptions(data);
+                } catch(err) {
+                    optionsContainer.innerHTML = `<div style="padding:10px;color:red">Lỗi tải dữ liệu</div>`;
+                }
+            }
+        });
+
+        search.addEventListener('click', e => e.stopPropagation());
+        
+        // Cần setTimeout để typing không bị request liên tục
+        let searchTimeout;
+        search.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            if(isDynamic) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const data = await fetchApi(keyword);
+                        renderOptions(data);
+                    } catch(err) {}
+                }, 300);
+            } else {
+                // Lọc trên giao diện
+                Array.from(optionsContainer.children).forEach(label => {
+                    const text = label.textContent.toLowerCase();
+                    label.style.display = text.includes(keyword) ? 'block' : 'none';
+                });
+            }
+        });
+
+        optionsContainer.addEventListener('click', e => e.stopPropagation());
+
+        function renderOptions(items) {
+            optionsContainer.innerHTML = '';
+            items.forEach(item => {
+                const label = document.createElement('label');
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.value = item.value;
+                cb.dataset.name = item.name;
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(' ' + item.name));
+                optionsContainer.appendChild(label);
+            });
+        }
+    }
+
+    // Initialize all filters
+    initCustomDropdown('dropdown-filter-customer', true, async (keyword) => {
+        const res = await api.getPartners(0, 50, keyword, '');
+        return (res.content || []).map(p => ({value: p.name, name: p.name}));
+    });
+
+    initCustomDropdown('dropdown-filter-product', true, async (keyword) => {
+        const res = await api.getProducts(0, 50, keyword);
+        return (res.content || []).map(p => ({value: p.name, name: p.name}));
+    });
+
+    initCustomDropdown('dropdown-filter-plate', true, async (keyword) => {
+        const res = await api.getVehicles(0, 50, keyword);
+        return (res.content || []).map(v => ({value: v.plateNumber, name: v.plateNumber}));
+    });
+
+    initCustomDropdown('dropdown-filter-status', false); // Status is static
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('open'));
+    });
+
+    const btnApplyFilters = document.getElementById('btn-apply-order-filters');
+    if (btnApplyFilters) {
+        btnApplyFilters.addEventListener('click', () => {
+            currentOrderFilters.customerNames = Array.from(document.querySelectorAll('#dropdown-filter-customer .dropdown-options input:checked')).map(cb => cb.value);
+            currentOrderFilters.productNames = Array.from(document.querySelectorAll('#dropdown-filter-product .dropdown-options input:checked')).map(cb => cb.value);
+            currentOrderFilters.plateNumbers = Array.from(document.querySelectorAll('#dropdown-filter-plate .dropdown-options input:checked')).map(cb => cb.value);
+            currentOrderFilters.statuses = Array.from(document.querySelectorAll('#dropdown-filter-status .dropdown-options input:checked')).map(cb => cb.value);
+            
+            const createdByFilter = document.getElementById('filter-created-by').value.trim();
+            currentOrderFilters.createdByNames = createdByFilter ? [createdByFilter] : [];
+
             currentOrderPage = 0;
             loadOrders();
-        });
-        
-        searchInputOrder.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                currentOrderSearchKeyword = searchInputOrder.value.trim();
-                currentOrderPage = 0;
-                loadOrders();
-            }
         });
     }
 

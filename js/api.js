@@ -327,15 +327,13 @@ const api = {
             throw error;
         }
     },
-    getOrders: async (page = 0, size = 10, keyword = '') => {
+    getOrders: async (page = 0, size = 10, filters = {}) => {
         try {
-            let url = `${API_BASE_URL}/orders?page=${page}&size=${size}`;
-            if (keyword) {
-                url = `${API_BASE_URL}/orders?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`;
-            }
+            let url = `${API_BASE_URL}/orders/filter?page=${page}&size=${size}`;
             const response = await fetch(url, {
-                method: 'GET',
-                headers: api.getHeaders()
+                method: 'POST',
+                headers: api.getHeaders(),
+                body: JSON.stringify(filters)
             });
             if (!response.ok) {
                 if(response.status === 401 || response.status === 403) throw new Error('UNAUTHORIZED');
