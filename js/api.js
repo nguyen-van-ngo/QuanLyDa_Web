@@ -15,6 +15,41 @@ const api = {
         return headers;
     },
 
+    // Generic methods
+    get: async (endpoint) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'GET',
+                headers: api.getHeaders()
+            });
+            if (!response.ok) {
+                if(response.status === 401 || response.status === 403) throw new Error('UNAUTHORIZED');
+                throw new Error('API GET request failed');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('API GET error:', error);
+            throw error;
+        }
+    },
+    post: async (endpoint, data) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: api.getHeaders(),
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                if(response.status === 401 || response.status === 403) throw new Error('UNAUTHORIZED');
+                throw new Error('API POST request failed');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('API POST error:', error);
+            throw error;
+        }
+    },
+
     // Auth
     login: async (username, password) => {
         try {

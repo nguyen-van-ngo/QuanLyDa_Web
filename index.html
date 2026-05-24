@@ -80,8 +80,8 @@
                 </div>
             </div>
             <ul class="nav-links">
-                <li>
-                    <a href="#" class="nav-item">
+                <li id="menu-group-dashboard">
+                    <a href="#" class="nav-item" id="menu-dashboard">
                         <i class='bx bx-home-alt'></i>
                         <span class="link_name">Tổng quan</span>
                     </a>
@@ -99,7 +99,8 @@
                         <i class='bx bx-chevron-down arrow'></i>
                     </div>
                     <ul class="sub-menu">
-                        <li><a href="#" id="menu-order-list">Danh sách đơn hàng</a></li>
+                        <li><a href="#" id="menu-order-list-nhap">Danh sách đơn hàng nhập</a></li>
+                        <li><a href="#" id="menu-order-list-xuat">Danh sách đơn hàng xuất</a></li>
                     </ul>
                 </li>
                 <li class="active open" id="menu-group-vehicle">
@@ -184,6 +185,112 @@
             <div class="content-wrapper">
                 <div class="breadcrumb" id="main-breadcrumb">
                     Trang chủ / Quản lý xe / <span class="current">Danh sách biển số</span>
+                </div>
+
+                <!-- Dashboard Panel -->
+                <div class="panel" id="dashboard-panel" style="display: none;">
+                    <h3 class="dashboard-section-title">Nhập Hàng</h3>
+                    <div class="dashboard-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Tổng đơn hàng</span>
+                                <h3 class="stat-value" id="dash-nhap-total">0</h3>
+                            </div>
+                            <div class="stat-icon icon-blue"><i class='bx bx-receipt'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Đơn đang xử lý</span>
+                                <h3 class="stat-value" id="dash-nhap-processing">0</h3>
+                            </div>
+                            <div class="stat-icon icon-yellow"><i class='bx bx-time-five'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Đã hoàn thành</span>
+                                <h3 class="stat-value" id="dash-nhap-completed">0</h3>
+                            </div>
+                            <div class="stat-icon icon-green"><i class='bx bx-check-square'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Tổng khối lượng</span>
+                                <h3 class="stat-value"><span id="dash-nhap-weight">0</span> <small>Tấn</small></h3>
+                            </div>
+                            <div class="stat-icon icon-blue"><i class='bx bx-cube'></i></div>
+                        </div>
+                    </div>
+
+                    <h3 class="dashboard-section-title">Xuất Hàng</h3>
+                    <div class="dashboard-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Tổng đơn hàng</span>
+                                <h3 class="stat-value" id="dash-xuat-total">0</h3>
+                            </div>
+                            <div class="stat-icon icon-blue"><i class='bx bx-receipt'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Đơn đang xử lý</span>
+                                <h3 class="stat-value" id="dash-xuat-processing">0</h3>
+                            </div>
+                            <div class="stat-icon icon-yellow"><i class='bx bx-truck'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Đã hoàn thành</span>
+                                <h3 class="stat-value" id="dash-xuat-completed">0</h3>
+                            </div>
+                            <div class="stat-icon icon-green"><i class='bx bx-check-square'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Tổng khối lượng</span>
+                                <h3 class="stat-value"><span id="dash-xuat-weight">0</span> <small>Tấn</small></h3>
+                            </div>
+                            <div class="stat-icon icon-blue"><i class='bx bx-cube'></i></div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-bottom-grid">
+                        <div class="dashboard-chart-container">
+                            <div class="chart-header">
+                                <h4>Biểu đồ khối lượng (tấn)</h4>
+                                <select id="dash-chart-days" class="chart-select">
+                                    <option value="1">1 ngày qua</option>
+                                    <option value="3" selected>3 ngày qua</option>
+                                    <option value="7">7 ngày qua</option>
+                                    <option value="14">14 ngày qua</option>
+                                    <option value="21">21 ngày qua</option>
+                                </select>
+                            </div>
+                            <div class="chart-body" style="position: relative; height:300px;">
+                                <canvas id="volumeChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-latest-orders">
+                            <div class="latest-header">
+                                <h4>Đơn hàng mới nhất</h4>
+                                <a href="#" id="dash-view-all-orders">Xem tất cả</a>
+                            </div>
+                            <div class="latest-body table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn</th>
+                                            <th>Khách hàng</th>
+                                            <th>Khối lượng</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-latest-table-body">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Order List Panel (Hidden by default) -->
@@ -639,7 +746,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/api.js?v=2"></script>
-    <script src="js/app_v3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js?v=3"></script>
+    <script src="js/app_v3.js?v=7"></script>
 </body>
 </html>

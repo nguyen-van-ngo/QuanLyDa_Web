@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuGroupOrder = document.getElementById('menu-group-order');
     const menuOrderCreate = document.getElementById('menu-order-create');
     const menuGroupOrderList = document.getElementById('menu-group-order-list');
-    const menuOrderList = document.getElementById('menu-order-list');
+    const menuOrderListNhap = document.getElementById('menu-order-list-nhap');
+    const menuOrderListXuat = document.getElementById('menu-order-list-xuat');
     const mainBreadcrumb = document.getElementById('main-breadcrumb');
 
     // Panels
@@ -24,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const productListPanel = document.getElementById('product-list-panel');
     const orderCreatePanel = document.getElementById('order-create-panel');
     const orderListPanel = document.getElementById('order-list-panel');
+    const dashboardPanel = document.getElementById('dashboard-panel');
+    const menuDashboard = document.getElementById('menu-dashboard');
+    const menuGroupDashboard = document.getElementById('menu-group-dashboard');
 
     // Vehicles DOM
     const vehicleTableBody = document.getElementById('vehicle-table-body');
@@ -131,15 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 th.style.display = isAdmin ? '' : 'none';
             });
         }
-        showVehiclePanel(); // Default to vehicle panel
+        showDashboardPanel(); // Default to dashboard panel
     }
 
     function showVehiclePanel() {
+        dashboardPanel.style.display = 'none';
         vehicleListPanel.style.display = 'block';
         partnerListPanel.style.display = 'none';
         if (productListPanel) productListPanel.style.display = 'none';
         if (orderCreatePanel) orderCreatePanel.style.display = 'none';
+        if (orderListPanel) orderListPanel.style.display = 'none';
         
+        if (menuGroupDashboard) menuGroupDashboard.classList.remove('active');
         menuGroupVehicle.classList.add('active');
         menuGroupPartner.classList.remove('active');
         if (menuGroupProduct) menuGroupProduct.classList.remove('active');
@@ -153,11 +160,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showPartnerPanel() {
+        dashboardPanel.style.display = 'none';
         vehicleListPanel.style.display = 'none';
         partnerListPanel.style.display = 'block';
         if (productListPanel) productListPanel.style.display = 'none';
         if (orderCreatePanel) orderCreatePanel.style.display = 'none';
+        if (orderListPanel) orderListPanel.style.display = 'none';
         
+        if (menuGroupDashboard) menuGroupDashboard.classList.remove('active');
         menuGroupPartner.classList.add('active', 'open');
         menuGroupVehicle.classList.remove('active');
         if (menuGroupProduct) menuGroupProduct.classList.remove('active');
@@ -171,11 +181,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showProductPanel() {
+        dashboardPanel.style.display = 'none';
         vehicleListPanel.style.display = 'none';
         partnerListPanel.style.display = 'none';
         if (productListPanel) productListPanel.style.display = 'block';
         if (orderCreatePanel) orderCreatePanel.style.display = 'none';
+        if (orderListPanel) orderListPanel.style.display = 'none';
         
+        if (menuGroupDashboard) menuGroupDashboard.classList.remove('active');
         if (menuGroupProduct) menuGroupProduct.classList.add('active', 'open');
         menuGroupVehicle.classList.remove('active');
         menuGroupPartner.classList.remove('active');
@@ -189,12 +202,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showOrderCreatePanel() {
+        dashboardPanel.style.display = 'none';
         vehicleListPanel.style.display = 'none';
         partnerListPanel.style.display = 'none';
         if (productListPanel) productListPanel.style.display = 'none';
         if (orderListPanel) orderListPanel.style.display = 'none';
         if (orderCreatePanel) orderCreatePanel.style.display = 'block';
         
+        if (menuGroupDashboard) menuGroupDashboard.classList.remove('active');
         if (menuGroupOrder) menuGroupOrder.classList.add('active', 'open');
         menuGroupVehicle.classList.remove('active');
         menuGroupPartner.classList.remove('active');
@@ -209,28 +224,42 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('orderCustomerId').value = '';
         document.getElementById('orderProductId').value = '';
         document.getElementById('orderVehicleId').value = '';
-        loadOrderFormInitialData();
         
         const today = new Date();
         document.getElementById('orderDate').value = today.toLocaleDateString('vi-VN');
     }
 
-    function showOrderListPanel() {
+    function showOrderListPanel(type = 'NHAP_HANG') {
+        dashboardPanel.style.display = 'none';
         vehicleListPanel.style.display = 'none';
         partnerListPanel.style.display = 'none';
         if (productListPanel) productListPanel.style.display = 'none';
         if (orderCreatePanel) orderCreatePanel.style.display = 'none';
         if (orderListPanel) orderListPanel.style.display = 'block';
         
+        if (menuGroupDashboard) menuGroupDashboard.classList.remove('active');
         if (menuGroupOrderList) menuGroupOrderList.classList.add('active', 'open');
         menuGroupVehicle.classList.remove('active');
         menuGroupPartner.classList.remove('active');
         if (menuGroupProduct) menuGroupProduct.classList.remove('active');
         if (menuGroupOrder) menuGroupOrder.classList.remove('active');
         
-        mainBreadcrumb.innerHTML = 'Trang chủ / Đơn hàng / <span class="current">Danh sách đơn hàng</span>';
-        document.getElementById('page-title').innerText = 'Danh sách đơn hàng';
+        const typeText = type === 'NHAP_HANG' ? 'nhập' : 'xuất';
+        mainBreadcrumb.innerHTML = `Trang chủ / Đơn hàng / <span class="current">Danh sách đơn hàng ${typeText}</span>`;
+        document.getElementById('page-title').innerText = `Danh sách đơn hàng ${typeText}`;
         
+        // Reset filters
+        document.querySelectorAll('.custom-dropdown .dropdown-options input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.getElementById('filter-created-by').value = '';
+        currentOrderFilters = {
+            customerNames: [],
+            createdByNames: [],
+            productNames: [],
+            statuses: [],
+            plateNumbers: [],
+            ordersType: type
+        };
+        currentOrderPage = 0;
         loadOrders();
     }
 
@@ -242,6 +271,13 @@ document.addEventListener('DOMContentLoaded', () => {
             parentLi.classList.toggle('open');
         });
     });
+
+    if (menuDashboard) {
+        menuDashboard.addEventListener('click', (e) => {
+            e.preventDefault();
+            showDashboardPanel();
+        });
+    }
 
     if (menuVehicleList) {
         menuVehicleList.addEventListener('click', (e) => {
@@ -275,12 +311,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (menuOrderList) {
-        menuOrderList.addEventListener('click', (e) => {
+    if (menuOrderListNhap) {
+        menuOrderListNhap.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('.sub-menu a').forEach(a => a.classList.remove('active'));
-            menuOrderList.classList.add('active');
-            showOrderListPanel();
+            menuOrderListNhap.classList.add('active');
+            showOrderListPanel('NHAP_HANG');
+        });
+    }
+
+    if (menuOrderListXuat) {
+        menuOrderListXuat.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.sub-menu a').forEach(a => a.classList.remove('active'));
+            menuOrderListXuat.classList.add('active');
+            showOrderListPanel('XUAT_HANG');
         });
     }
 
@@ -318,7 +363,11 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await api.login(usernameInput, passwordInput);
                 localStorage.setItem('token', response.accessToken);
-                localStorage.setItem('user', JSON.stringify({username: usernameInput}));
+                localStorage.setItem('user', JSON.stringify({
+                    id: response.user.id,
+                    username: response.user.username,
+                    fullName: response.user.fullName || response.user.username
+                }));
                 showToast('Đăng nhập thành công!');
                 showDashboard();
             } catch (error) {
@@ -983,7 +1032,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 } catch (error) {
-                    dropdownEl.innerHTML = '<div class="autocomplete-error">Lỗi khi tìm kiếm!</div>';
+                    const msg = error.message && error.message.includes('Khách hàng') ? error.message : 'Lỗi khi tìm kiếm!';
+                    dropdownEl.innerHTML = `<div class="autocomplete-error" style="color:red; font-weight:bold;">${msg}</div>`;
                     dropdownEl.style.display = 'block';
                 }
             }, 300);
@@ -1013,8 +1063,30 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('orderCustomerId'),
             document.getElementById('orderCustomerDropdown'),
             async (keyword) => {
-                const data = await api.getPartners(0, 10, keyword, '');
-                return (data.content || []).filter(p => p.isActive === true); // Chỉ lấy Hoạt động
+                const orderType = document.getElementById('orderType').value;
+                const partnerType = orderType === 'NHAP_HANG' ? 'SUPPLIER' : 'BUYER';
+                
+                // Fetch filtered by type (works if backend is updated)
+                const data = await api.getPartners(0, 10, keyword, partnerType);
+                let items = (data.content || []).filter(p => p.isActive === true);
+                
+                // Frontend fallback filter (in case backend is not restarted and ignores type)
+                items = items.filter(p => p.partnerType === partnerType);
+                
+                // If nothing found but user typed something, check if it exists under wrong type
+                if (items.length === 0 && keyword.trim() !== '') {
+                    const allData = await api.getPartners(0, 10, keyword, '');
+                    const allItems = (allData.content || []).filter(p => p.isActive === true);
+                    const wrongItems = allItems.filter(p => p.partnerType !== partnerType);
+                    
+                    if (wrongItems.length > 0) {
+                        const wrongTypeNames = wrongItems.map(p => p.name).join(', ');
+                        const expectedStr = orderType === 'NHAP_HANG' ? 'Nhập hàng' : 'Xuất hàng';
+                        const actualStr = orderType === 'NHAP_HANG' ? 'Người mua (BUYER)' : 'Nhà cung cấp (SUPPLIER)';
+                        throw new Error(`Khách hàng "${wrongTypeNames}" là ${actualStr}, chưa được đăng ký cho loại đơn ${expectedStr}!`);
+                    }
+                }
+                return items;
             },
             (item) => `<strong>${item.name}</strong> - ${item.phone || 'Chưa có SĐT'}`,
             (item, inputEl, hiddenEl) => {
@@ -1022,6 +1094,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 hiddenEl.value = item.id;
             }
         );
+
+        // Reset selected customer when order type changes
+        document.getElementById('orderType').addEventListener('change', () => {
+            document.getElementById('orderCustomerSearch').value = '';
+            document.getElementById('orderCustomerId').value = '';
+            document.getElementById('orderCustomerDropdown').style.display = 'none';
+        });
 
         // 2. Autocomplete Product
         setupAutocomplete(
@@ -1096,6 +1175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Prepare JSON according to user requirements
+                const userObj = JSON.parse(localStorage.getItem('user')) || {};
                 const orderData = {
                     orderCode: "ORD-" + Date.now(),
                     ordersType: type,
@@ -1106,7 +1186,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     orderedWeight: parseFloat(weight),
                     note: note,
                     orderDate: new Date().toISOString().split('T')[0],
-                    createdById: 1
+                    createdById: userObj.id || 1,
+                    weighedById: userObj.id || null
                 };
                 
                 await api.createOrder(orderData);
@@ -1337,6 +1418,266 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==================== DASHBOARD LOGIC ====================
+    let volumeChartInstance = null;
+
+    function showDashboardPanel() {
+        if (!dashboardPanel) return;
+        vehicleListPanel.style.display = 'none';
+        partnerListPanel.style.display = 'none';
+        if (productListPanel) productListPanel.style.display = 'none';
+        if (orderCreatePanel) orderCreatePanel.style.display = 'none';
+        if (orderListPanel) orderListPanel.style.display = 'none';
+        dashboardPanel.style.display = 'block';
+
+        if (menuGroupDashboard) menuGroupDashboard.classList.add('active');
+        menuGroupVehicle.classList.remove('active');
+        menuGroupPartner.classList.remove('active');
+        if (menuGroupProduct) menuGroupProduct.classList.remove('active');
+        if (menuGroupOrder) menuGroupOrder.classList.remove('active', 'open');
+        if (menuGroupOrderList) menuGroupOrderList.classList.remove('active', 'open');
+
+        mainBreadcrumb.innerHTML = 'Home <span class="separator">&bull;</span> <span class="current">Tổng quan</span>';
+        document.getElementById('page-title').innerText = 'Tổng quan';
+
+        loadDashboardStats();
+        loadDashboardLatestOrders();
+    }
+
+    const dashChartDaysSelect = document.getElementById('dash-chart-days');
+    if (dashChartDaysSelect) {
+        dashChartDaysSelect.addEventListener('change', () => {
+            loadDashboardStats(parseInt(dashChartDaysSelect.value));
+        });
+    }
+
+    const dashViewAllOrders = document.getElementById('dash-view-all-orders');
+    if (dashViewAllOrders) {
+        dashViewAllOrders.addEventListener('click', (e) => {
+            e.preventDefault();
+            showOrderListPanel('NHAP_HANG');
+        });
+    }
+
+    async function loadDashboardStats(days = 3) {
+        try {
+            const response = await api.get('/dashboard/statistics?days=' + days);
+            if (response.success) {
+                const data = response.data;
+                // Nhap hang stats
+                document.getElementById('dash-nhap-total').innerText = data.importStats.totalOrders;
+                document.getElementById('dash-nhap-processing').innerText = data.importStats.processingOrders;
+                document.getElementById('dash-nhap-completed').innerText = data.importStats.completedOrders;
+                document.getElementById('dash-nhap-weight').innerText = data.importStats.totalWeight;
+
+                // Xuat hang stats
+                document.getElementById('dash-xuat-total').innerText = data.exportStats.totalOrders;
+                document.getElementById('dash-xuat-processing').innerText = data.exportStats.processingOrders;
+                document.getElementById('dash-xuat-completed').innerText = data.exportStats.completedOrders;
+                document.getElementById('dash-xuat-weight').innerText = data.exportStats.totalWeight;
+
+                renderVolumeChart(data.chartData);
+            }
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+        }
+    }
+
+    function renderVolumeChart(chartData) {
+        const ctx = document.getElementById('volumeChart');
+        if (!ctx) return;
+
+        if (volumeChartInstance) {
+            volumeChartInstance.destroy();
+        }
+
+        // Register custom interaction mode for stack
+        if (Chart.Interaction && Chart.Interaction.modes) {
+            Chart.Interaction.modes.myStack = function(chart, e, options, useFinalPosition) {
+                const items = Chart.Interaction.modes.index(chart, e, options, useFinalPosition);
+                if (!items.length) return items;
+                const intersected = Chart.Interaction.modes.point(chart, e, options, useFinalPosition);
+                if (!intersected.length) return []; 
+                const activeStack = chart.data.datasets[intersected[0].datasetIndex].stack;
+                return items.filter(item => chart.data.datasets[item.datasetIndex].stack === activeStack && item.element.$context.raw > 0);
+            };
+        }
+
+        const topTotalsPlugin = {
+            id: 'topTotals',
+            afterDatasetsDraw: (chart) => {
+                const ctx = chart.ctx;
+                ctx.font = 'bold 12px Arial';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                const metaData = chart.data.datasets.map((_, i) => chart.getDatasetMeta(i));
+                const numPoints = chart.data.labels.length;
+                for (let i = 0; i < numPoints; i++) {
+                    let nhapTotal = 0, xuatTotal = 0;
+                    let nhapTopY = chart.scales.y.bottom, xuatTopY = chart.scales.y.bottom;
+                    let nhapX = 0, xuatX = 0;
+
+                    metaData.forEach((meta, dsIdx) => {
+                        if (meta.hidden) return;
+                        const val = chart.data.datasets[dsIdx].data[i];
+                        if (val > 0) {
+                            const stack = chart.data.datasets[dsIdx].stack;
+                            const element = meta.data[i];
+                            if (stack === 'Nhập Hàng') {
+                                nhapTotal += val;
+                                nhapTopY = Math.min(nhapTopY, element.y);
+                                nhapX = element.x;
+                            } else if (stack === 'Xuất Hàng') {
+                                xuatTotal += val;
+                                xuatTopY = Math.min(xuatTopY, element.y);
+                                xuatX = element.x;
+                            }
+                        }
+                    });
+
+                    if (nhapTotal > 0) ctx.fillText(nhapTotal, nhapX, nhapTopY - 5);
+                    if (xuatTotal > 0) ctx.fillText(xuatTotal, xuatX, xuatTopY - 5);
+                }
+            }
+        };
+
+
+        // Labels (dates)
+        const labels = chartData.map(d => {
+            const dateObj = new Date(d.date);
+            return dateObj.toLocaleDateString('vi-VN');
+        });
+
+        // Collect all distinct product names
+        const productsSet = new Set();
+        chartData.forEach(d => {
+            d.imports.forEach(p => productsSet.add(p.productName));
+            d.exports.forEach(p => productsSet.add(p.productName));
+        });
+        const products = Array.from(productsSet);
+
+        // Define a color palette
+        const colors = [
+            '#1a63f4', '#05cd99', '#ffce20', '#ee5d50', 
+            '#8e44ad', '#e67e22', '#2c3e50', '#16a085', '#d35400'
+        ];
+
+        const datasets = [];
+
+        // Build dataset for IMPORTS
+        products.forEach((prodName, idx) => {
+            const data = chartData.map(d => {
+                const p = d.imports.find(item => item.productName === prodName);
+                return p ? p.totalWeight : 0;
+            });
+            datasets.push({
+                label: prodName,
+                data: data,
+                backgroundColor: colors[idx % colors.length],
+                stack: 'Nhập Hàng',
+            });
+        });
+
+        // Build dataset for EXPORTS
+        products.forEach((prodName, idx) => {
+            const data = chartData.map(d => {
+                const p = d.exports.find(item => item.productName === prodName);
+                return p ? p.totalWeight : 0;
+            });
+            datasets.push({
+                label: prodName,
+                data: data,
+                backgroundColor: colors[idx % colors.length],
+                stack: 'Xuất Hàng',
+            });
+        });
+
+        volumeChartInstance = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            plugins: [topTotalsPlugin],
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: { display: true, text: 'Ngày / Cột: Nhập (Trái) - Xuất (Phải)' }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        title: { display: true, text: 'Tấn' }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: Chart.Interaction && Chart.Interaction.modes ? 'myStack' : 'nearest',
+                        intersect: true,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                if (!tooltipItems.length) return '';
+                                return tooltipItems[0].label + ' (' + tooltipItems[0].dataset.stack + ')';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            boxWidth: 12,
+                            filter: function(item, chart) {
+                                return item.datasetIndex < products.length;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    async function loadDashboardLatestOrders() {
+        const tbody = document.getElementById('dash-latest-table-body');
+        if (!tbody) return;
+        try {
+            const url = `/orders/filter?page=0&size=10&sort=createdAt,desc`;
+            const response = await api.post(url, {});
+            
+            if (response && response.content) {
+                tbody.innerHTML = '';
+                const orders = response.content;
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">Chưa có đơn hàng nào</td></tr>';
+                    return;
+                }
+                
+                orders.forEach(order => {
+                    const statusClass = order.status === 'HOAN_THANH' ? 'badge-success' : 
+                                      (order.status === 'CHO_XAC_NHAN' ? 'badge-warning' : 'badge-primary');
+                    const statusText = order.status === 'HOAN_THANH' ? 'Hoàn thành' : 
+                                     (order.status === 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
+                                     (order.status === 'HUY' ? 'Đã hủy' : 'Đang xử lý'));
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${order.orderCode}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.orderedWeight} tấn</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        } catch (error) {
+            console.error('Error load latest orders', error);
+        }
+    }
+
     // Start App
     init();
+    // Default to Dashboard Panel instead of Vehicle
+    showDashboardPanel();
 });
