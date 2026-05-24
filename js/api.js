@@ -331,7 +331,7 @@ const api = {
         try {
             let url = `${API_BASE_URL}/orders?page=${page}&size=${size}`;
             if (keyword) {
-                url = `${API_BASE_URL}/orders/search?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`;
+                url = `${API_BASE_URL}/orders?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`;
             }
             const response = await fetch(url, {
                 method: 'GET',
