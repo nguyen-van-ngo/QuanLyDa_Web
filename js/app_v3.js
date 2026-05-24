@@ -1187,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     note: note,
                     orderDate: new Date().toISOString().split('T')[0],
                     createdById: userObj.id || 1,
-                    weighedById: userObj.id || null
+                    weighedById: null
                 };
                 
                 await api.createOrder(orderData);
